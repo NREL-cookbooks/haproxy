@@ -13,3 +13,4 @@ recipe "haproxy::app_lb", "Installs and configures haproxy by searching for node
 end
 
 depends "ruby_enterprise"
+depends "yum"

@@ -18,6 +18,7 @@
 #
 
 include_recipe "ruby_enterprise"
+include_recipe "yum::epel"
 
 package "haproxy" do
   action :install
