@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe "ruby_enterprise"
+
 package "haproxy" do
   action :install
 end
@@ -33,10 +35,43 @@ service "haproxy" do
   action [:enable, :start]
 end
 
-template "/etc/haproxy/haproxy.cfg" do
-  source "haproxy.cfg.erb"
+# Setup the /etc/haproxy directory according to how the haproxy_join helper
+# script expects. This allows us to maintain separate configuration files that
+# will get concatenated into the single configuration file that haproxy
+# actually reads.
+ree_gem "haproxy_join"
+
+directory "/etc/haproxy/conf" do
+  mode "0755"
   owner "root"
   group "root"
-  mode 0644
-  notifies :restart, resources(:service => "haproxy")
+  recursive true
+end
+
+directory "/etc/haproxy/conf/backend.d" do
+  mode "0775"
+  owner "root"
+  group(node[:common_writable_group] || "root")
+end
+
+directory "/etc/haproxy/conf/frontend.d" do
+  mode "0775"
+  owner "root"
+  group(node[:common_writable_group] || "root")
+end
+
+template "/etc/haproxy/conf/global.cfg" do
+  source "global.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
+end
+
+template "/etc/haproxy/conf/defaults.cfg" do
+  source "defaults.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
 end

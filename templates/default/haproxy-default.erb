@@ -2,3 +2,8 @@
 ENABLED=1
 # Add extra flags here.
 #EXTRAOPTS="-de -m 16"
+
+# Before the haproxy is run, pass all the config files in /etc/haproxy through
+# the haproxy_join tool. This concatenates all the organized config files into
+# a single config file (since haproxy can only read a single config file).
+/usr/local/bin/haproxy_join haproxy.cfg /etc/haproxy
