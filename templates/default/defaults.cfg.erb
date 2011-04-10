@@ -1,15 +1,32 @@
+####################################################################
+##### GENEARTED BY CHEF. LOCAL MODIFICATIONS WILL BE REPLACED. #####
+####################################################################
+
 defaults
-  log global
-  mode http
+  log                       global
+  mode                      http
   option httplog
-  retries 3
   option redispatch
-  maxconn 2000
-  timeout connect 5s
-  timeout client 50s
-  timeout server 50s
 
   # Allow keep-alive connections with the internet client, but not with backend
   # servers. Without this, backend servers keep connections alive which means
   # HAProxy's backend processing rules get skipped on subsequent requests.
   option http-server-close
+
+  # Append the X-Forwaded-For header for incoming requests. But don't add the
+  # header for already proxied requests on this server.
+  option forwardfor         except 127.0.0.1
+
+  retries                   3
+  maxconn                   3000
+  timeout http-request      10s
+  timeout queue             1m
+  timeout connect           10s
+  timeout client            1m
+  timeout server            1m
+  timeout http-keep-alive   1m
+  timeout check             1m
+
+listen haproxy_stats 127.0.0.1:22002
+  stats enable
+  stats uri /

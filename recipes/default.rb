@@ -17,18 +17,13 @@
 # limitations under the License.
 #
 
-include_recipe "ruby_enterprise"
+include_recipe "rvm::install"
 include_recipe "yum::epel"
+
+include_recipe "rsyslog"
 
 package "haproxy" do
   action :install
-end
-
-template "/etc/default/haproxy" do
-  source "haproxy-default.erb"
-  owner "root"
-  group "root"
-  mode 0644
 end
 
 service "haproxy" do
@@ -36,11 +31,24 @@ service "haproxy" do
   action [:enable, :start]
 end
 
+conf_dir = value_for_platform({
+  ["ubuntu", "debian"] => { "default" => "default" },
+  ["redhat", "centos", "fedora"] => { "default" => "sysconfig"}
+})
+
+template "/etc/#{conf_dir}/haproxy" do
+  source "haproxy-default.erb"
+  owner "root"
+  group "root"
+  mode 0644
+  notifies :restart, "service[haproxy]"
+end
+
 # Setup the /etc/haproxy directory according to how the haproxy_join helper
 # script expects. This allows us to maintain separate configuration files that
 # will get concatenated into the single configuration file that haproxy
 # actually reads.
-ree_gem "haproxy_join"
+rvm_gem "haproxy_join"
 
 directory "/etc/haproxy/conf" do
   mode "0755"
@@ -75,4 +83,9 @@ template "/etc/haproxy/conf/defaults.cfg" do
   group "root"
   mode "0644"
   notifies :reload, "service[haproxy]"
+end
+
+logrotate_app "haproxy" do
+  path node[:haproxy][:log][:file]
+  rotate 10
 end

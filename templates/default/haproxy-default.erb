@@ -1,3 +1,7 @@
+####################################################################
+##### GENEARTED BY CHEF. LOCAL MODIFICATIONS WILL BE REPLACED. #####
+####################################################################
+
 # Set ENABLED to 1 if you want the init script to start haproxy.
 ENABLED=1
 # Add extra flags here.
@@ -6,4 +10,4 @@ ENABLED=1
 # Before the haproxy is run, pass all the config files in /etc/haproxy through
 # the haproxy_join tool. This concatenates all the organized config files into
 # a single config file (since haproxy can only read a single config file).
-/usr/local/bin/haproxy_join haproxy.cfg /etc/haproxy
+/usr/local/bin/rvm default exec haproxy_join haproxy.cfg /etc/haproxy
