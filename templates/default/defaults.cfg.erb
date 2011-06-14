@@ -27,6 +27,6 @@ defaults
   timeout http-keep-alive   1m
   timeout check             1m
 
-listen haproxy_stats 127.0.0.1:22002
+listen haproxy_stats *:22002
   stats enable
   stats uri /
