@@ -85,6 +85,14 @@ template "/etc/haproxy/conf/defaults.cfg" do
   notifies :reload, "service[haproxy]"
 end
 
+template "/etc/haproxy/conf/frontend.cfg" do
+  source "frontend.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
+end
+
 logrotate_app "haproxy" do
   path node[:haproxy][:log][:file]
   rotate 10
