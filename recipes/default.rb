@@ -93,6 +93,27 @@ template "/etc/haproxy/conf/frontend.cfg" do
   notifies :reload, "service[haproxy]"
 end
 
+if node[:haproxy][:web_router][:enabled]
+  template "/etc/haproxy/conf/frontend.d/web_router.cfg" do
+    source "frontend.d/web_router.cfg.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+    notifies :reload, "service[haproxy]"
+  end
+
+  node[:haproxy][:web_router][:domains].each do |domain_options|
+    template "/etc/haproxy/conf/backend.d/#{domain_options[:id]}_farm.cfg" do
+      source "backend.cfg.erb"
+      variables :domain_options => domain_options
+      owner "root"
+      group "root"
+      mode "0644"
+      notifies :reload, "service[haproxy]"
+    end
+  end
+end
+
 logrotate_app "haproxy" do
   path node[:haproxy][:log][:file]
   rotate 10
