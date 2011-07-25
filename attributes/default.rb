@@ -23,7 +23,3 @@ default['haproxy']['log']['file'] = "/var/log/haproxy.log"
 default['haproxy']['member_port'] = "8080"
 default['haproxy']['enable_admin'] = true
 default['haproxy']['app_server_role'] = "webserver"
-
-default[:haproxy][:web_router][:enabled] = true
-default[:haproxy][:web_router][:bind_address] = "*"
-default[:haproxy][:web_router][:domains] = []
