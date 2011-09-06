@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+include_recipe "iptables::haproxy_stats"
 include_recipe "rvm::install"
 include_recipe "yum::epel"
 

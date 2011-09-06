@@ -12,6 +12,7 @@ recipe "haproxy::app_lb", "Installs and configures haproxy by searching for node
   supports os
 end
 
+depends "iptables"
 depends "logrotate"
 depends "rsyslog"
 depends "rvm"
