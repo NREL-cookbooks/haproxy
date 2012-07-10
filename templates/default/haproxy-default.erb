@@ -10,4 +10,4 @@ ENABLED=1
 # Before the haproxy is run, pass all the config files in /etc/haproxy through
 # the haproxy_join tool. This concatenates all the organized config files into
 # a single config file (since haproxy can only read a single config file).
-/usr/local/rvm/bin/rvm default exec haproxy_join haproxy.cfg /etc/haproxy
+<%= node[:rbenv][:install_prefix] %>/rbenv/shims/haproxy_join haproxy.cfg /etc/haproxy

@@ -18,7 +18,7 @@
 #
 
 include_recipe "iptables::haproxy_stats"
-include_recipe "rvm::install"
+include_recipe "rbenv::global_version"
 include_recipe "yum::epel"
 
 include_recipe "rsyslog"
@@ -49,7 +49,9 @@ end
 # script expects. This allows us to maintain separate configuration files that
 # will get concatenated into the single configuration file that haproxy
 # actually reads.
-rvm_gem "haproxy_join"
+rbenv_gem "haproxy_join" do
+  ruby_version node[:rbenv][:install_global_version]
+end
 
 directory "/etc/haproxy/conf" do
   mode "0755"
@@ -95,6 +97,6 @@ template "/etc/haproxy/conf/frontend.cfg" do
 end
 
 logrotate_app "haproxy" do
-  path node[:haproxy][:log][:file]
+  path [node[:haproxy][:log][:file]]
   rotate 10
 end
