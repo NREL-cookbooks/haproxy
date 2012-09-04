@@ -17,15 +17,14 @@
 # limitations under the License.
 #
 
+include_recipe "iptables::haproxy_stats"
+include_recipe "rbenv::global_version"
+include_recipe "yum::epel"
+
+include_recipe "rsyslog"
+
 package "haproxy" do
   action :install
-end
-
-template "/etc/default/haproxy" do
-  source "haproxy-default.erb"
-  owner "root"
-  group "root"
-  mode 0644
 end
 
 service "haproxy" do
@@ -33,10 +32,71 @@ service "haproxy" do
   action [:enable, :start]
 end
 
-template "/etc/haproxy/haproxy.cfg" do
-  source "haproxy.cfg.erb"
+conf_dir = value_for_platform({
+  ["ubuntu", "debian"] => { "default" => "default" },
+  ["redhat", "centos", "fedora"] => { "default" => "sysconfig"}
+})
+
+template "/etc/#{conf_dir}/haproxy" do
+  source "haproxy-default.erb"
   owner "root"
   group "root"
   mode 0644
-  notifies :restart, resources(:service => "haproxy")
+  notifies :restart, "service[haproxy]"
+end
+
+# Setup the /etc/haproxy directory according to how the haproxy_join helper
+# script expects. This allows us to maintain separate configuration files that
+# will get concatenated into the single configuration file that haproxy
+# actually reads.
+rbenv_gem "haproxy_join" do
+  ruby_version node[:rbenv][:install_global_version]
+end
+
+directory "/etc/haproxy/conf" do
+  mode "0755"
+  owner "root"
+  group "root"
+  recursive true
+end
+
+directory "/etc/haproxy/conf/backend.d" do
+  mode "0775"
+  owner "root"
+  group(node[:common_writable_group] || "root")
+end
+
+directory "/etc/haproxy/conf/frontend.d" do
+  mode "0775"
+  owner "root"
+  group(node[:common_writable_group] || "root")
+end
+
+template "/etc/haproxy/conf/global.cfg" do
+  source "global.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
+end
+
+template "/etc/haproxy/conf/defaults.cfg" do
+  source "defaults.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
+end
+
+template "/etc/haproxy/conf/frontend.cfg" do
+  source "frontend.cfg.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :reload, "service[haproxy]"
+end
+
+logrotate_app "haproxy" do
+  path [node[:haproxy][:log][:file]]
+  rotate 10
 end

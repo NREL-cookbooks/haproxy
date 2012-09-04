@@ -1,0 +1,15 @@
+####################################################################
+##### GENEARTED BY CHEF. LOCAL MODIFICATIONS WILL BE REPLACED. #####
+####################################################################
+
+global
+  log 127.0.0.1 <%= node[:haproxy][:log][:facility] %> <%= node[:haproxy][:log][:level] %>
+  log-tag haproxy
+
+  chroot /var/lib/haproxy
+  
+  maxconn 4096
+  user haproxy
+  group haproxy
+
+  stats socket /var/lib/haproxy/stats

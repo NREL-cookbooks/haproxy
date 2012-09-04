@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+default['haproxy']['log']['facility'] = "local3"
+default['haproxy']['log']['level'] = "info"
+default['haproxy']['log']['file'] = "/var/log/haproxy.log"
 default['haproxy']['member_port'] = "8080"
 default['haproxy']['enable_admin'] = true
 default['haproxy']['app_server_role'] = "webserver"
