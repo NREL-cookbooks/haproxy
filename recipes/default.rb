@@ -96,6 +96,14 @@ template "/etc/haproxy/conf/frontend.cfg" do
   notifies :reload, "service[haproxy]"
 end
 
+template "/etc/rsyslog.d/haproxy.conf" do
+  source "rsyslog.conf.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :restart, "service[rsyslog]"
+end
+
 logrotate_app "haproxy" do
   path [node[:haproxy][:log][:file]]
   rotate 10

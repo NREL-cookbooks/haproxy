@@ -1,0 +1,4 @@
+# Log haproxy messages
+:programname, isequal, "haproxy" <%= node[:haproxy][:log][:file] %>
+# Now discard haproxy messages so they don't appear in /var/log/messages 
+:programname, isequal, "haproxy" ~
