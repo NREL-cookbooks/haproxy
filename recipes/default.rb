@@ -27,18 +27,13 @@ package "haproxy" do
   action :install
 end
 
-service "haproxy" do
-  supports :restart => true, :status => true, :reload => true
-  action [:enable, :start]
-end
-
 conf_dir = value_for_platform({
   ["ubuntu", "debian"] => { "default" => "default" },
   ["redhat", "centos", "fedora"] => { "default" => "sysconfig"}
 })
 
 template "/etc/#{conf_dir}/haproxy" do
-  source "haproxy-default.erb"
+  source "haproxy-default"
   owner "root"
   group "root"
   mode 0644
@@ -107,4 +102,9 @@ end
 logrotate_app "haproxy" do
   path [node[:haproxy][:log][:file]]
   rotate 10
+end
+
+service "haproxy" do
+  supports :restart => true, :status => true, :reload => true
+  action [:enable, :start]
 end
