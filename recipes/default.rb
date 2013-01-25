@@ -33,7 +33,7 @@ conf_dir = value_for_platform({
 })
 
 template "/etc/#{conf_dir}/haproxy" do
-  source "haproxy-default"
+  source "haproxy-default.erb"
   owner "root"
   group "root"
   mode 0644
