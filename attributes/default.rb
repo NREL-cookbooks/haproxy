@@ -20,6 +20,7 @@
 default['haproxy']['log']['facility'] = "local3"
 default['haproxy']['log']['level'] = "info"
 default['haproxy']['log']['file'] = "/var/log/haproxy.log"
+default['haproxy']['log']['rotate'] = 90
 default['haproxy']['enable_admin'] = true
 default['haproxy']['incoming_address'] = "0.0.0.0"
 default['haproxy']['incoming_port'] = 80

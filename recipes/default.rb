@@ -101,7 +101,8 @@ end
 
 logrotate_app "haproxy" do
   path [node[:haproxy][:log][:file]]
-  rotate 10
+  frequency "daily"
+  rotate node[:haproxy][:log][:rotate]
 end
 
 service "haproxy" do
