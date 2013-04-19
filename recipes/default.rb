@@ -19,13 +19,9 @@
 
 include_recipe "iptables::haproxy_stats"
 include_recipe "rbenv::system"
-include_recipe "yum::epel"
-
 include_recipe "rsyslog"
 
-package "haproxy" do
-  action :install
-end
+include_recipe "haproxy::install_#{node['haproxy']['install_method']}"
 
 conf_dir = value_for_platform({
   ["ubuntu", "debian"] => { "default" => "default" },
@@ -46,26 +42,26 @@ end
 # actually reads.
 rbenv_gem "haproxy_join"
 
-directory "/etc/haproxy/conf" do
+directory "#{node['haproxy']['conf_dir']}/conf" do
   mode "0755"
   owner "root"
   group "root"
   recursive true
 end
 
-directory "/etc/haproxy/conf/backend.d" do
+directory "#{node['haproxy']['conf_dir']}/conf/backend.d" do
   mode "0775"
   owner "root"
   group(node[:common_writable_group] || "root")
 end
 
-directory "/etc/haproxy/conf/frontend.d" do
+directory "#{node['haproxy']['conf_dir']}/conf/frontend.d" do
   mode "0775"
   owner "root"
   group(node[:common_writable_group] || "root")
 end
 
-template "/etc/haproxy/conf/global.cfg" do
+template "#{node['haproxy']['conf_dir']}/conf/global.cfg" do
   source "global.cfg.erb"
   owner "root"
   group "root"
@@ -73,7 +69,7 @@ template "/etc/haproxy/conf/global.cfg" do
   notifies :reload, "service[haproxy]"
 end
 
-template "/etc/haproxy/conf/defaults.cfg" do
+template "#{node['haproxy']['conf_dir']}/conf/defaults.cfg" do
   source "defaults.cfg.erb"
   owner "root"
   group "root"
@@ -81,7 +77,7 @@ template "/etc/haproxy/conf/defaults.cfg" do
   notifies :reload, "service[haproxy]"
 end
 
-template "/etc/haproxy/conf/frontend.cfg" do
+template "#{node['haproxy']['conf_dir']}/conf/frontend.cfg" do
   source "frontend.cfg.erb"
   owner "root"
   group "root"
