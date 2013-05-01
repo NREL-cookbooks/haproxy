@@ -27,6 +27,18 @@ remote_file "#{Chef::Config[:file_cache_path]}/haproxy-#{node['haproxy']['source
   action :create_if_missing
 end
 
+if node['haproxy']['source']['use_pcre']
+  package "pcre-devel"
+end
+
+if node['haproxy']['source']['use_zlib']
+  package "zlib-devel"
+end
+
+if node['haproxy']['source']['use_openssl']
+  package "openssl-devel"
+end
+
 make_cmd = "make TARGET=#{node['haproxy']['source']['target_os']}"
 make_cmd << " CPU=#{node['haproxy']['source']['target_cpu' ]}" unless node['haproxy']['source']['target_cpu'].empty?
 make_cmd << " ARCH=#{node['haproxy']['source']['target_arch']}" unless node['haproxy']['source']['target_arch'].empty?
@@ -51,6 +63,12 @@ user "haproxy" do
 end
 
 directory node['haproxy']['conf_dir']
+
+directory "/var/lib/haproxy" do
+  recursive true
+  mode "0755"
+  owner "haproxy"
+end
 
 template "/etc/init.d/haproxy" do
   case(node['platform_family'])
