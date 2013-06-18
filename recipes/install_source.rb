@@ -53,7 +53,8 @@ bash "compile_haproxy" do
     cd haproxy-#{node['haproxy']['source']['version']}
     #{make_cmd} && make install PREFIX=#{node['haproxy']['source']['prefix']}
   EOH
-  creates "#{node['haproxy']['source']['prefix']}/sbin/haproxy"
+
+  not_if "#{node['haproxy']['source']['prefix']}/sbin/haproxy -v 2>&1 | grep 'HA-Proxy version #{::Regexp.escape(node['haproxy']['source']['version'])} '"
 end
 
 user "haproxy" do
